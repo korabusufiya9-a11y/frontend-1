@@ -6,6 +6,63 @@ import React, {
 
 import axios from "axios"
 
+const CATEGORY_DATA: Record<string, string[]> = {
+  Transportation: [
+    "Transportation",
+    "Business Trips",
+    "Taxi",
+    "Public Transport",
+  ],
+
+  Vehicle: [
+    "Vehicle",
+    "Fuel",
+    "Parking",
+    "Rentals",
+    "Vehicle Insurance",
+    "Vehicle Maintenance",
+  ],
+
+  "Life & Entertainment": [
+    "Life & Entertainment",
+    "Holiday",
+    "TV & Streaming",
+    "Books",
+    "Education",
+    "Hobbies",
+    "Fitness",
+    "Health Care",
+  ],
+
+  "Communication & PC": [
+    "Communication & PC",
+    "Internet",
+    "Telephone",
+    "Software",
+    "Apps",
+    "Games",
+  ],
+
+  "Finance Expenses": [
+    "Finance Expenses",
+    "Charges",
+    "Fines",
+    "Loans",
+    "Insurance",
+    "Taxes",
+  ],
+
+  Investment: [
+    "Investment",
+    "Savings",
+    "Financial Investments",
+    "Realty",
+  ],
+
+  Other: ["Others", "Missing"],
+
+  Unknown: ["Unknown Expense", "Unknown Income"],
+}
 interface Category {
   _id: string
   name: string
@@ -52,12 +109,12 @@ export default function CategoryPage() {
     useState<Category | null>(null)
 
   const [form, setForm] = useState({
-    name: "",
-    subCategory: "",
-    masterCategory: "Food",
-    iconcolor: "#6366f1",
-  })
-
+  name: "",
+  subCategory: "",
+  customSubCategory: "",
+  masterCategory: "Income",
+  iconcolor: "#6366f1",
+})
   /* ================= LOAD ================= */
 
   const loadCategories = async () => {
@@ -75,7 +132,8 @@ export default function CategoryPage() {
       console.log(error)
     }
   }
-
+const subCategories =
+  CATEGORY_DATA[form.masterCategory] || []
   useEffect(() => {
 
     loadCategories()
@@ -108,7 +166,8 @@ export default function CategoryPage() {
         {
           name: form.name,
           subCategory:
-            form.subCategory,
+  form.customSubCategory ||
+  form.subCategory,
           masterCategory:
             form.masterCategory,
           iconcolor:
@@ -119,12 +178,12 @@ export default function CategoryPage() {
       )
 
       setForm({
-        name: "",
-        subCategory: "",
-        masterCategory: "Food",
-        iconcolor: "#6366f1",
-      })
-
+       name: "",
+       subCategory: "",
+       customSubCategory: "",
+       masterCategory: "Income",
+       iconcolor: "#6366f1",
+})
       setShowModal(false)
 
       loadCategories()
@@ -536,108 +595,124 @@ export default function CategoryPage() {
 
             {/* NAME */}
 
-            <div className="mb-4">
+<div className="mb-4">
 
-              <label className="text-sm text-gray-500">
-                Category Name
-              </label>
+  <label className="text-sm text-gray-500">
+    Category Name
+  </label>
 
-              <input
-                required
-                value={form.name}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    name:
-                      e.target.value,
-                  })
-                }
-                placeholder="Food"
-                className="w-full mt-2 border border-gray-200 bg-gray-50 px-4 py-3 rounded-2xl outline-none"
-              />
+  <input
+    required
+    value={form.name}
+    onChange={(e) =>
+      setForm({
+        ...form,
+        name: e.target.value,
+      })
+    }
+    placeholder="Food"
+    className="w-full mt-2 border border-gray-200 bg-gray-50 px-4 py-3 rounded-2xl outline-none"
+  />
 
-            </div>
+</div>
 
-            {/* SUB CATEGORY */}
+{/* MASTER CATEGORY */}
 
-            <div className="mb-4">
+<div className="mb-4">
 
-              <label className="text-sm text-gray-500">
-                Sub Category
-              </label>
+  <label className="text-sm text-gray-500">
+    Master Category
+  </label>
 
-              <input
-                required
-                value={
-                  form.subCategory
-                }
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    subCategory:
-                      e.target.value,
-                  })
-                }
-                placeholder="Restaurant"
-                className="w-full mt-2 border border-gray-200 bg-gray-50 px-4 py-3 rounded-2xl outline-none"
-              />
+  <select
+    value={form.masterCategory}
+    onChange={(e) =>
+      setForm({
+        ...form,
+        masterCategory: e.target.value,
+        subCategory: "",
+      })
+    }
+    className="w-full mt-2 border border-gray-200 bg-gray-50 px-4 py-3 rounded-2xl outline-none"
+  >
 
-            </div>
+    {Object.keys(CATEGORY_DATA).map((item) => (
 
-            {/* MASTER */}
+      <option
+        key={item}
+        value={item}
+      >
+        {item}
+      </option>
 
-            <div className="mb-4">
+    ))}
 
-              <label className="text-sm text-gray-500">
-                Master Category
-              </label>
+  </select>
 
-              <select
-                value={
-                  form.masterCategory
-                }
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    masterCategory:
-                      e.target.value,
-                  })
-                }
-                className="w-full mt-2 border border-gray-200 bg-gray-50 px-4 py-3 rounded-2xl outline-none"
-              >
+</div>
 
-                <option>Food</option>
-                <option>Shopping</option>
-                <option>Travel</option>
-                <option>Health</option>
-                <option>Entertainment</option>
+{/* SUB CATEGORY */}
 
-              </select>
+<div className="mb-4">
 
-            </div>
+  <label className="text-sm text-gray-500">
+    Sub Category
+  </label>
 
-            {/* COLOR */}
+  <select
+    value={form.subCategory}
+    onChange={(e) =>
+      setForm({
+        ...form,
+        subCategory: e.target.value,
+      })
+    }
+    className="w-full mt-2 border border-gray-200 bg-gray-50 px-4 py-3 rounded-2xl outline-none"
+  >
 
-            <div className="mb-6">
+    <option value="">
+      Select Sub Category
+    </option>
 
-              <label className="text-sm text-gray-500">
-                Icon Color
-              </label>
+    {subCategories.map((item) => (
 
-              <input
-                type="color"
-                value={form.iconcolor}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    iconcolor:
-                      e.target.value,
-                  })
-                }
-                className="w-full mt-2 h-12 rounded-xl border border-gray-200"
-              />
+      <option
+        key={item}
+        value={item}
+      >
+        {item}
+      </option>
 
-            </div>
+    ))}
+
+  </select>
+
+</div>
+
+
+
+{/* COLOR */}
+
+<div className="mb-6">
+
+  <label className="text-sm text-gray-500">
+    Icon Color
+  </label>
+
+  <input
+    type="color"
+    value={form.iconcolor}
+    onChange={(e) =>
+      setForm({
+        ...form,
+        iconcolor: e.target.value,
+      })
+    }
+    className="w-full mt-2 h-12 rounded-xl border border-gray-200"
+  />
+
+</div>
+
 
             {/* BUTTONS */}
 
